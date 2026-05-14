@@ -1,7 +1,7 @@
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
 const pino = require('pino');
 const { handleMessage } = require('./lib/handler');
-const { checkYtDlp, checkFfmpeg } = require('./lib/downloader');
+const { checkFfmpeg } = require('./lib/downloader');
 const { cleanTemp } = require('./lib/utils');
 const config = require('./config');
 
@@ -22,15 +22,7 @@ console.log(`
 // ═══════════════════════════════════════════════════
 async function checkDependencies() {
     console.log('[SETUP] Mengecek dependencies...');
-    const hasYtDlp = await checkYtDlp();
     const hasFfmpeg = await checkFfmpeg();
-
-    if (!hasYtDlp) {
-        console.warn('[WARNING] yt-dlp tidak terdeteksi!');
-        console.warn('  → Fitur download media sosial tidak akan berfungsi tanpa yt-dlp.');
-    } else {
-        console.log('[OK] yt-dlp terdeteksi ✓');
-    }
 
     if (!hasFfmpeg) {
         console.warn('[WARNING] ffmpeg tidak terdeteksi!');

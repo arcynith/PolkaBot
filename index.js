@@ -56,7 +56,10 @@ async function startBot() {
         logger: pino({ level: 'silent' }),
         printQRInTerminal: true,
         auth: state,
-        browser: ['PolkaBot', 'Chrome', '1.0.0']
+        browser: ['PolkaBot', 'Chrome', '1.0.0'],
+        markOnlineOnConnect: false,
+        generateHighQualityLinkPreview: false,
+        syncFullHistory: false
     });
 
     sock.ev.on('creds.update', saveCreds);
@@ -88,6 +91,10 @@ async function startBot() {
         
         // Cek pesan apakah valid dan dari orang lain
         if (!msg.message || msg.key.fromMe) return;
+
+        // Abaikan pesan lama (lebih dari 60 detik) agar tidak memproses antrean lama saat bot baru nyala
+        const now = Math.floor(Date.now() / 1000);
+        if (now - msg.messageTimestamp > 60) return;
 
         try {
             await handleMessage(sock, msg);

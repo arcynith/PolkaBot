@@ -46,7 +46,6 @@ async function startBot() {
     const sock = makeWASocket({
         version,
         logger: pino({ level: 'silent' }),
-        printQRInTerminal: true,
         auth: state,
         browser: ['PolkaBot', 'Chrome', '1.0.0'],
         markOnlineOnConnect: false,
@@ -57,7 +56,13 @@ async function startBot() {
     sock.ev.on('creds.update', saveCreds);
 
     sock.ev.on('connection.update', (update) => {
-        const { connection, lastDisconnect } = update;
+        const { connection, lastDisconnect, qr } = update;
+        
+        if (qr) {
+            const qrcode = require('qrcode-terminal');
+            qrcode.generate(qr, { small: true });
+            console.log('\n[SCAN QR] Silakan buka WhatsApp -> Linked Devices -> Scan QR Code di atas!\n');
+        }
         if (connection === 'close') {
             const shouldReconnect = (lastDisconnect.error)?.output?.statusCode !== DisconnectReason.loggedOut;
             console.log('[DISCONNECT] Koneksi terputus. Alasan:', lastDisconnect.error?.message);
